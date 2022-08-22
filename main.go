@@ -54,7 +54,6 @@ func main() {
 	templateid = cfg.Section("wechat").Key("template_id").String()
 	templateid = cfg.Section("wechat").Key("template_id").String()
 	openid = cfg.Section("wechat").Key("openid").String()
-	love_start_time := cfg.Section("setting").Key("love_time").String()
 
 	c := cron.New()
 	//spec := "*/5 * * * * ?"
@@ -64,7 +63,7 @@ func main() {
 	c.AddFunc(spec, func() { // AddFunc 是添加任务的地方，此函数接收两个参数，第一个为表示定时任务的字符串，第二个为真正的真正的任务。
 		var weatherData weather = getWeather()
 
-		timeData := getHourDiffer(love_start_time, time.Now().Format("2006-01-02 15:04:05"))
+		timeData := getHourDiffer("2022-07-11 20:00:00", time.Now().Format("2006-01-02 15:04:05"))
 
 		Templatepost(weatherData.Data.Weather, weatherData.Data.Temp, getEarthy(), timeData/24, timeData)
 	})

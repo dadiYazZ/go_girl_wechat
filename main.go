@@ -14,10 +14,13 @@ import (
 )
 
 var (
-	APPID      string
-	APPSECRET  string
-	templateid string
-	openid     string
+	APPID           string
+	APPSECRET       string
+	templateid      string
+	openid          string
+	city            string
+	love_start_time string
+	spec            string
 )
 
 type token struct {
@@ -42,24 +45,11 @@ type weather struct {
 
 func main() {
 
-	cfg, err := ini.Load("config.ini")
-
-	if err != nil {
-		fmt.Println("读取配置文件出错!")
-		return
-	}
-
-	APPID = cfg.Section("wechat").Key("appid").String()
-	APPSECRET = cfg.Section("wechat").Key("app_secret").String()
-	templateid = cfg.Section("wechat").Key("template_id").String()
-	templateid = cfg.Section("wechat").Key("template_id").String()
-	openid = cfg.Section("wechat").Key("openid").String()
-	love_start_time := cfg.Section("setting").Key("love_time").String()
+	loadConfig()
 
 	c := cron.New()
 	//spec := "*/5 * * * * ?"
 	//spec := "0 0 7 * * *"
-	spec := cfg.Section("cron").Key("spec").String()
 
 	c.AddFunc(spec, func() { // AddFunc 是添加任务的地方，此函数接收两个参数，第一个为表示定时任务的字符串，第二个为真正的真正的任务。
 		var weatherData weather = getWeather()
@@ -70,7 +60,29 @@ func main() {
 	})
 	c.Start()
 
-	select {}
+	fmt.Println("已经开始运行啦~")
+
+	for {
+		loadConfig()
+	}
+
+}
+
+func loadConfig() {
+	cfg, err := ini.Load("config.ini")
+
+	if err != nil {
+		fmt.Println("读取配置文件出错!")
+		return
+	}
+	APPID = cfg.Section("wechat").Key("appid").String()
+	APPSECRET = cfg.Section("wechat").Key("app_secret").String()
+	templateid = cfg.Section("wechat").Key("template_id").String()
+	templateid = cfg.Section("wechat").Key("template_id").String()
+	openid = cfg.Section("wechat").Key("openid").String()
+	love_start_time = cfg.Section("setting").Key("love_time").String()
+	city = cfg.Section("setting").Key("city").String()
+	spec = cfg.Section("cron").Key("spec").String()
 
 }
 
@@ -131,7 +143,7 @@ func Templatepost(weatherData, temperature, data string, dayTime, dayHours int64
 
 // 获取天气
 func getWeather() weather {
-	url := fmt.Sprintf("https://www.mxnzp.com/api/weather/current/%v?app_id=%v&app_secret=%v", "长春市", "iloophp0hm0il7nq", "Zk50bnJmU0tEQ0VSVVlrUnVUTU81UT09")
+	url := fmt.Sprintf("https://www.mxnzp.com/api/weather/current/%v?app_id=%v&app_secret=%v", city, "iloophp0hm0il7nq", "Zk50bnJmU0tEQ0VSVVlrUnVUTU81UT09")
 	resp, err := http.Get(url)
 
 	if err != nil {

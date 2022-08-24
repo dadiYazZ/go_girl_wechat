@@ -68,6 +68,7 @@ func main() {
 
 }
 
+// 加载配置
 func loadConfig() {
 	cfg, err := ini.Load("config.ini")
 
